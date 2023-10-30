@@ -17,8 +17,8 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->string('password');
             $table->string('picture');
-            $table->bigInteger('sosial_id');
-            $table->bigInteger('sosial_type');
+            $table->bigInteger('sosial_id')->nullable();
+            $table->bigInteger('sosial_type')->nullable();
             $table->timestamps();
         });
     }
