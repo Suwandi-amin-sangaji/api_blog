@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\Auth\SignInRequest;
 use App\Http\Requests\Auth\SignUpRequest;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -45,10 +46,47 @@ class AuthController extends Controller
                 ],
                 'access_token' => [
                     'token' => $token,
-                    'type' => 'bearer',
+                    'type' => 'Bearer',
                     'expires_in' => strtotime('+' . auth()->factory()->getTTL() . 'minutes')
                 ]
             ],
         ], 200);
+    }
+
+
+    public function signIn(SignInRequest $request){
+        $token = auth()->attempt($request->validated());
+
+        if (!$token) {
+            return response()->json([
+                'meta' => [
+                    'code' => 401,
+                    'status' => 'errors',
+                    'message' => 'Password Atau Username Salah'
+                ],
+                'data' => []
+            ], 401);
+        }
+
+        $users = auth()->user();
+
+        return response()->json([
+            'meta' => [
+                'code' => 200,
+                'status' => 'succes',
+                'message' => 'Berhasil login'
+            ],
+            'data' => [
+                'name' => $users->name,
+                'email' => $users->email,
+                'picture' => $users->picture
+            ],
+            'access_token' => [
+                'token' => $token,
+                'type' => 'Bearer',
+                'expires_in' => strtotime('+' . auth()->factory()->getTTL() . ' minutes')
+            ],
+        ], 200);
+
     }
 }
